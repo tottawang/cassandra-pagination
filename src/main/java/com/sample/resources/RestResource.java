@@ -1,6 +1,7 @@
 package com.sample.resources;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 import javax.ws.rs.GET;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sample.domain.Product;
 import com.sample.domain.ProductById;
 import com.sample.repository.ProductRepository;
 
@@ -32,9 +34,16 @@ public class RestResource {
   }
 
   @GET
-  @Path("get/{productId}")
+  @Path("products/{productId}")
   public ProductById get(@PathParam("productId") UUID productId) {
-    return repository.getProduct(productId);
+    ProductById result = repository.getProduct(productId);
+    return result;
+  }
+
+  @GET
+  @Path("products")
+  public List<Product> get() {
+    return repository.getProducts();
   }
 
   @POST

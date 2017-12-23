@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -58,6 +59,12 @@ public class ProductRepository {
     ProductAccessor accessor = manager.createAccessor(ProductAccessor.class);
     Result<ProductById> itemResult = accessor.selectbyId(productId);
     return itemResult.one();
+  }
+
+  public List<Product> getProducts() {
+    ProductAccessor accessor = manager.createAccessor(ProductAccessor.class);
+    Result<Product> itemResult = accessor.selectbyItemAndVersion();
+    return itemResult.all();
   }
 
   /**

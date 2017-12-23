@@ -37,6 +37,8 @@ public class Product {
   @Transient
   private String text;
 
+  public Product() {}
+
   public Product(String itemid, int version, UUID productid, Map<String, String> scopes,
       ProductType type, JsonNode attributes) {
     this.itemid = itemid;
