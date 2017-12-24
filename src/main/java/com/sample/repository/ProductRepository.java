@@ -1,6 +1,7 @@
 package com.sample.repository;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,8 +12,10 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.amazonaws.util.StringUtils;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.PagingState;
 import com.datastax.driver.core.ResultSet;
@@ -27,6 +30,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sample.conf.CassandraBatchProcess;
 import com.sample.conf.CassandraConfiguration;
+import com.sample.domain.Links;
+import com.sample.domain.PagedList;
 import com.sample.domain.Product;
 import com.sample.domain.ProductById;
 import com.sample.domain.ProductType;
@@ -34,8 +39,11 @@ import com.sample.domain.ProductType;
 @Component
 public class ProductRepository {
 
-  private static final String attributes = "{\"alias\":\"data\",\"systemId\":\"adsk.wipqa\"}";
+  private static final String attributes = "{\"level\":\"1\",\"category\":\"test\"}";
   private static final ObjectMapper objectMapper = new ObjectMapper();
+
+  @Value("${DEFAULT_PAGE_SIZE:2}")
+  private int defaultPageSize;
 
   @Autowired
   @Qualifier(CassandraConfiguration.CASSANDRA_SESSION)
@@ -67,8 +75,10 @@ public class ProductRepository {
   public List<Row> getAllPagedProducts() {
     ProductAccessor accessor = manager.createAccessor(ProductAccessor.class);
     Statement statement = accessor.selectbyItemAndVersion();
-    statement.setFetchSize(2);
+    statement.setFetchSize(defaultPageSize);
     ResultSet rs = session.execute(statement);
+    // ResultSet.all will fetch all paged results by ArrayBackedResultSet.iterator, which won't stop
+    // querying next paged results until next page is null
     List<Row> allResults = rs.all();
     for (Row row : allResults) {
       System.out.println(row);
@@ -76,64 +86,29 @@ public class ProductRepository {
     return null;
   }
 
-  public List<Row> getProducts() {
+  public PagedList<Product> getPagedProduct(String pagingState) {
     ProductAccessor accessor = manager.createAccessor(ProductAccessor.class);
     Statement statement = accessor.selectbyItemAndVersion();
-    statement.setFetchSize(2);
+    statement.setFetchSize(defaultPageSize);
+    if (!StringUtils.isNullOrEmpty(pagingState)) {
+      statement.setPagingState(PagingState.fromString(pagingState));
+    }
+
     ResultSet rs = session.execute(statement);
-
-    PagingState nextPage = rs.getExecutionInfo().getPagingState();
-    String pagingState = nextPage.toString();
-    System.out.println(pagingState);
-
-    // Note that we don't rely on RESULTS_PER_PAGE, since Cassandra might
-    // have not respected it, or we might be at the end of the result set
+    Mapper<Product> mapper = manager.mapper(Product.class);
+    Result<Product> results = mapper.map(rs);
+    List<Product> products = new ArrayList<>();
     int remaining = rs.getAvailableWithoutFetching();
-    for (Row row : rs) {
-      System.out.println(row);
+    for (Product product : results) {
+      products.add(product);
       if (--remaining == 0) {
         break;
       }
     }
 
-    Statement statement2 = accessor.selectbyItemAndVersion();
-    statement2.setFetchSize(8);
-    statement2.setPagingState(PagingState.fromString(pagingState));
-    ResultSet rs2 = session.execute(statement2);
-
-    PagingState nextPage2 = rs2.getExecutionInfo().getPagingState();
-    String pagingState2 = nextPage2.toString();
-    System.out.println(pagingState2);
-
-    // Note that we don't rely on RESULTS_PER_PAGE, since Cassandra might
-    // have not respected it, or we might be at the end of the result set
-    int remaining2 = rs2.getAvailableWithoutFetching();
-    for (Row row : rs) {
-      System.out.println(row);
-      if (--remaining2 == 0) {
-        break;
-      }
-    }
-
-    Statement statement3 = accessor.selectbyItemAndVersion();
-    statement3.setFetchSize(20);
-    statement3.setPagingState(PagingState.fromString(pagingState2));
-    ResultSet rs3 = session.execute(statement3);
-
-    PagingState nextPage3 = rs3.getExecutionInfo().getPagingState();
-    System.out.println(nextPage3.toString());
-
-    // Note that we don't rely on RESULTS_PER_PAGE, since Cassandra might
-    // have not respected it, or we might be at the end of the result set
-    int remaining3 = rs3.getAvailableWithoutFetching();
-    for (Row row : rs) {
-      System.out.println(row);
-      if (--remaining3 == 0) {
-        break;
-      }
-    }
-
-    return null;
+    PagingState nextPage = rs.getExecutionInfo().getPagingState();
+    return new PagedList<Product>(products,
+        nextPage == null ? null : String.format(Links.BASE_URL_PAGED_LISTING, nextPage.toString()));
   }
 
   /**

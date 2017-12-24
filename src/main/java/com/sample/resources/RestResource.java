@@ -9,6 +9,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Component;
 
 import com.datastax.driver.core.Row;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sample.domain.PagedList;
+import com.sample.domain.Product;
 import com.sample.domain.ProductById;
 import com.sample.repository.ProductRepository;
 
@@ -23,6 +26,7 @@ import com.sample.repository.ProductRepository;
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/api")
 public class RestResource {
+
 
   @Autowired
   private ProductRepository repository;
@@ -40,16 +44,21 @@ public class RestResource {
     return result;
   }
 
+  /**
+   * Get all paged results by automatic pagination feature.
+   * 
+   * @return
+   */
   @GET
-  @Path("products")
+  @Path("all-products")
   public List<Row> get() {
-    return repository.getProducts();
+    return repository.getAllPagedProducts();
   }
 
   @GET
-  @Path("products-auto-paging")
-  public List<Row> getAllPagesAutomatically() {
-    return repository.getAllPagedProducts();
+  @Path("paged-products")
+  public PagedList<Product> getPagedProducts(@QueryParam("pagingState") String pagingState) {
+    return repository.getPagedProduct(pagingState);
   }
 
   @POST

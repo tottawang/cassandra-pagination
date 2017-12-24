@@ -119,4 +119,8 @@ public class Product {
     this.attributes = attributes;
   }
 
+  @Override
+  public String toString() {
+    return "Product [itemid=" + itemid + ", version=" + version + ", productid=" + productid + "]";
+  }
 }
