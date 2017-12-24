@@ -8,5 +8,5 @@ export CASSANDRA_KEYSPACE=products
 ./gradlew clean build
 
 Step-2 :
-java -jar build/libs/sample-0.0.1-SNAPSHOT.jar
+java -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=9001,suspend=n -jar build/libs/sample-0.0.1-SNAPSHOT.jar
 

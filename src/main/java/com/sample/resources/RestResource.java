@@ -14,8 +14,8 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.datastax.driver.core.Row;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.sample.domain.Product;
 import com.sample.domain.ProductById;
 import com.sample.repository.ProductRepository;
 
@@ -42,8 +42,14 @@ public class RestResource {
 
   @GET
   @Path("products")
-  public List<Product> get() {
+  public List<Row> get() {
     return repository.getProducts();
+  }
+
+  @GET
+  @Path("products-auto-paging")
+  public List<Row> getAllPagesAutomatically() {
+    return repository.getAllPagedProducts();
   }
 
   @POST

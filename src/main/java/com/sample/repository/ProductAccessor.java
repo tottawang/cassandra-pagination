@@ -2,11 +2,11 @@ package com.sample.repository;
 
 import java.util.UUID;
 
+import com.datastax.driver.core.Statement;
 import com.datastax.driver.mapping.Result;
 import com.datastax.driver.mapping.annotations.Accessor;
 import com.datastax.driver.mapping.annotations.Param;
 import com.datastax.driver.mapping.annotations.Query;
-import com.sample.domain.Product;
 import com.sample.domain.ProductById;
 
 @Accessor
@@ -16,6 +16,6 @@ public interface ProductAccessor {
   Result<ProductById> selectbyId(@Param("productId") UUID productid);
 
   @Query("SELECT * FROM products where itemid='new item id' and version=1")
-  Result<Product> selectbyItemAndVersion();
+  Statement selectbyItemAndVersion();
 
 }
