@@ -98,6 +98,9 @@ public class ProductRepository {
     Mapper<Product> mapper = manager.mapper(Product.class);
     Result<Product> results = mapper.map(rs);
     List<Product> products = new ArrayList<>();
+
+    // avoid loading all records by automatic pagination (rs.all()), load one page only with
+    // getAvailableWithoutFetching value
     int remaining = rs.getAvailableWithoutFetching();
     for (Product product : results) {
       products.add(product);
