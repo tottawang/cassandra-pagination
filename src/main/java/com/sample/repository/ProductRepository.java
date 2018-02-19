@@ -125,11 +125,13 @@ public class ProductRepository {
     UUID productId = UUID.randomUUID();
     JsonNode payload = objectMapper.readTree(attributes);
     String type = "any type";
-    Product product = new Product("new item id", 1, productId, scopes, type, payload);
+    String category = "any category";
+    Product product = new Product("new item id", 1, productId, scopes, type, payload, category);
     Mapper<Product> mapper = manager.mapper(Product.class);
     mapper.save(product);
 
-    ProductById productById = new ProductById("new item id", 1, productId, scopes, type, payload);
+    ProductById productById =
+        new ProductById("new item id", 1, productId, scopes, type, payload, category);
     Mapper<ProductById> mapperForProductById = manager.mapper(ProductById.class);
     mapperForProductById.save(productById);
   }
@@ -145,9 +147,10 @@ public class ProductRepository {
     scopes.put("name", "value");
     UUID productId = UUID.randomUUID();
     JsonNode payload = objectMapper.readTree(attributes);
-    Product product = new Product("new item id", 1, productId, scopes, "any type", payload);
+    Product product =
+        new Product("new item id", 1, productId, scopes, "any type", payload, "any category");
     ProductById productById =
-        new ProductById("new item id", 1, productId, scopes, "any type", payload);
+        new ProductById("new item id", 1, productId, scopes, "any type", payload, "any category");
     Collection<?> secondaryTables = new HashSet<>(Arrays.asList(productById));
     batchProcessor.executeBatchInsert(product, secondaryTables);
   }

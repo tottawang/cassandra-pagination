@@ -28,6 +28,9 @@ public class Product {
   @ClusteringColumn(1)
   private UUID productid;
 
+  @ClusteringColumn(2)
+  private String category;
+
   @Column(name = "scopes")
   private Map<String, String> scopes;
 
@@ -40,7 +43,7 @@ public class Product {
   public Product() {}
 
   public Product(String itemid, int version, UUID productid, Map<String, String> scopes,
-      String type, JsonNode attributes) {
+      String type, JsonNode attributes, String category) {
     this.itemid = itemid;
     this.version = version;
     this.productid = productid;
@@ -48,6 +51,7 @@ public class Product {
     this.scopes = scopes;
     this.type = type;
     this.attributes = attributes;
+    this.category = category;
   }
 
   public UUID getProductid() {
@@ -119,8 +123,20 @@ public class Product {
     this.attributes = attributes;
   }
 
+  public String getCategory() {
+    return category;
+  }
+
+  public void setCategory(String category) {
+    this.category = category;
+  }
+
   @Override
   public String toString() {
-    return "Product [itemid=" + itemid + ", version=" + version + ", productid=" + productid + "]";
+    return "Product [itemid=" + itemid + ", version=" + version + ", type=" + type + ", productid="
+        + productid + ", category=" + category + ", scopes=" + scopes + ", attributes=" + attributes
+        + ", text=" + text + "]";
   }
+
+
 }
