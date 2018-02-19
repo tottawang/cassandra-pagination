@@ -22,14 +22,14 @@ public class Product {
   @PartitionKey(1)
   private int version;
 
-  @ClusteringColumn
+  @ClusteringColumn(0)
+  private String type;
+
+  @ClusteringColumn(1)
   private UUID productid;
 
   @Column(name = "scopes")
   private Map<String, String> scopes;
-
-  @Column(name = "type")
-  private ProductType type;
 
   @Column(name = "attributes", codec = JsonCodec.class)
   private JsonNode attributes;
@@ -40,7 +40,7 @@ public class Product {
   public Product() {}
 
   public Product(String itemid, int version, UUID productid, Map<String, String> scopes,
-      ProductType type, JsonNode attributes) {
+      String type, JsonNode attributes) {
     this.itemid = itemid;
     this.version = version;
     this.productid = productid;
@@ -85,11 +85,11 @@ public class Product {
     this.scopes = scopes;
   }
 
-  public ProductType getType() {
+  public String getType() {
     return type;
   }
 
-  public void setType(ProductType type) {
+  public void setType(String type) {
     this.type = type;
   }
 

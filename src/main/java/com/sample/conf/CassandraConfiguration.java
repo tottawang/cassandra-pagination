@@ -13,11 +13,9 @@ import com.datastax.driver.core.CodecRegistry;
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.QueryOptions;
 import com.datastax.driver.core.Session;
-import com.datastax.driver.extras.codecs.enums.EnumNameCodec;
 import com.datastax.driver.extras.codecs.json.JacksonJsonCodec;
 import com.datastax.driver.mapping.MappingManager;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.sample.domain.ProductType;
 
 @Configuration
 @Component
@@ -44,7 +42,6 @@ public class CassandraConfiguration {
   public void init() throws Exception {
     // register enum data type
     CodecRegistry codecRegistry = CodecRegistry.DEFAULT_INSTANCE;
-    codecRegistry.register(new EnumNameCodec<ProductType>(ProductType.class));
     codecRegistry.register(new JacksonJsonCodec<JsonNode>(JsonNode.class));
   }
 

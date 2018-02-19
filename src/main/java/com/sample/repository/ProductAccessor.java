@@ -15,7 +15,8 @@ public interface ProductAccessor {
   @Query("SELECT * FROM product_by_id where productid=:productid and itemid='new item id' and version=1")
   Result<ProductById> selectbyId(@Param("productId") UUID productid);
 
-  @Query("SELECT * FROM products where itemid='new item id' and version=1")
+  // TODO parameterize type query param
+  @Query("SELECT * FROM products where itemid='new item id' and version=1 and type='any type'")
   Statement selectbyItemAndVersion();
 
 }

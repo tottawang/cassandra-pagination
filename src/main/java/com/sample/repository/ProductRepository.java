@@ -34,7 +34,6 @@ import com.sample.domain.Links;
 import com.sample.domain.PagedList;
 import com.sample.domain.Product;
 import com.sample.domain.ProductById;
-import com.sample.domain.ProductType;
 
 @Component
 public class ProductRepository {
@@ -125,12 +124,12 @@ public class ProductRepository {
     scopes.put("name", "value");
     UUID productId = UUID.randomUUID();
     JsonNode payload = objectMapper.readTree(attributes);
-    Product product = new Product("new item id", 1, productId, scopes, ProductType.Rocket, payload);
+    String type = "any type";
+    Product product = new Product("new item id", 1, productId, scopes, type, payload);
     Mapper<Product> mapper = manager.mapper(Product.class);
     mapper.save(product);
 
-    ProductById productById =
-        new ProductById("new item id", 1, productId, scopes, ProductType.Rocket, payload);
+    ProductById productById = new ProductById("new item id", 1, productId, scopes, type, payload);
     Mapper<ProductById> mapperForProductById = manager.mapper(ProductById.class);
     mapperForProductById.save(productById);
   }
@@ -146,9 +145,9 @@ public class ProductRepository {
     scopes.put("name", "value");
     UUID productId = UUID.randomUUID();
     JsonNode payload = objectMapper.readTree(attributes);
-    Product product = new Product("new item id", 1, productId, scopes, ProductType.Rocket, payload);
+    Product product = new Product("new item id", 1, productId, scopes, "any type", payload);
     ProductById productById =
-        new ProductById("new item id", 1, productId, scopes, ProductType.Rocket, payload);
+        new ProductById("new item id", 1, productId, scopes, "any type", payload);
     Collection<?> secondaryTables = new HashSet<>(Arrays.asList(productById));
     batchProcessor.executeBatchInsert(product, secondaryTables);
   }

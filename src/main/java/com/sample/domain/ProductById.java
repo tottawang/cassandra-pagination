@@ -28,7 +28,7 @@ public class ProductById {
   private Map<String, String> scopes;
 
   @Column(name = "type")
-  private ProductType type;
+  private String type;
 
   @Column(name = "attributes", codec = JsonCodec.class)
   private JsonNode attributes;
@@ -36,7 +36,7 @@ public class ProductById {
   public ProductById() {}
 
   public ProductById(String itemid, int version, UUID productid, Map<String, String> scopes,
-      ProductType type, JsonNode attributes) {
+      String type, JsonNode attributes) {
     this.itemid = itemid;
     this.version = version;
     this.productid = productid;
@@ -80,11 +80,11 @@ public class ProductById {
     this.scopes = scopes;
   }
 
-  public ProductType getType() {
+  public String getType() {
     return type;
   }
 
-  public void setType(ProductType type) {
+  public void setType(String type) {
     this.type = type;
   }
 

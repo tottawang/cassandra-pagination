@@ -5,7 +5,7 @@ CREATE TABLE if not exists products (
     scopes map<text, text>,
     type text,
     attributes text,
-    PRIMARY KEY ((itemid, version), productid)
+    PRIMARY KEY ((itemid, version), type, productid)
 );
 
 CREATE TABLE if not exists product_by_id (
